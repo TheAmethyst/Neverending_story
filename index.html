@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neverending Story</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-fade-overlay"></div>
+    <img id="bg" src="img/main.jpg">
+
+    <header>
+        <nav>
+            <button class="nav-btn" onclick="openPage('home')">Home</button>
+            <button class="nav-btn" onclick="openPage('history')">Love Notes</button>
+            <button class="nav-btn" onclick="openPage('gallery')">Gallery</button>
+            <button class="nav-btn" onclick="openPage('timeline')">Timeline</button>
+        </nav>
+    </header>
+
+    <div class="admin-controls" id="mainControls">
+        <button id="addMemoryBtn" class="main-add-btn" onclick="openModal('history')">
+            Add new memory
+        </button>
+
+        <button id="addGalleryBtn" class="main-add-btn gallery-style-btn" onclick="openGalleryModal()">
+            Add photo
+        </button>
+
+        <button id="addTimelineBtn" class="main-add-btn" onclick="openTimelineModal()">
+            Add event
+        </button>
+
+    </div>
+
+    <div id="content"></div>
+
+    <div id="yearsPanel" class="years-menu" style="display: none;"></div>
+
+
+    <div id="postModal" class="modal">
+        <div class="polaroid-frame">
+            <button class="close-outside" onclick="closeModal()">&times;</button>
+            <div class="polaroid-header">
+                <input type="text" id="postDate" class="handwritten-date" placeholder="ДД.ММ.ГГГГ">
+            </div>
+            <div class="polaroid-photo-area" onclick="document.getElementById('postImage').click()">
+                <input type="file" id="postImage" accept="image/*" style="display:none" onchange="previewImage(this)">
+                <div id="uploadPlaceholder" class="polaroid-placeholder">
+                    <span class="plus-icon">+</span>
+                    <p>нажми сюда чтобы добавить фото</p>
+                </div>
+                <img id="imagePreview" src="" style="display:none;">
+            </div>
+            <div class="polaroid-footer">
+                <textarea id="postText" placeholder="напиши что-нибудь..." class="handwritten-text"></textarea>
+                <button class="btn-save-polaroid" id="saveBtn" onclick="addPost()">сохранить</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="galleryForm" class="modal">
+        <div class="polaroid-frame">
+            <button class="close-outside" onclick="closeGalleryForm()">&times;</button>
+            <div class="polaroid-photo-area" onclick="document.getElementById('galleryImageFile').click()">
+                <input type="file" id="galleryImageFile" accept="image/*" style="display:none" onchange="previewGalleryImage(this)" multiple>
+                <div id="galleryUploadPlaceholder" class="polaroid-placeholder">
+                    <span class="plus-icon">+</span>
+                    <p>Добавить фото в галерею</p>
+                </div>
+                <img id="galleryImagePreview" src="" style="display:none;">
+            </div>
+            <div class="polaroid-footer">
+                <button class="btn-save-polaroid" id="saveGalleryBtn" onclick="addGalleryPhoto()">сохранить в галерею</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="timelineModal" class="modal">
+        <div class="polaroid-frame">
+            <button class="close-outside" onclick="closeTimelineModal()">&times;</button>
+            
+            <div class="polaroid-header">
+                <input type="date" id="timelineDate" class="handwritten-date">
+            </div>
+
+            <div class="polaroid-photo-area" onclick="document.getElementById('timelineFile').click()">
+                <input type="file" id="timelineFile" accept="image/*" style="display:none" onchange="previewTimelineImg(this)">
+                <div id="timelinePreviewPlaceholder" class="polaroid-placeholder">
+                    <span class="plus-icon">+</span>
+                    <p>Добавить фото события</p>
+                </div>
+                <img id="timelineImgPreview" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+            </div>
+
+            <div class="polaroid-footer">
+                <input type="text" id="timelineTitle" placeholder="Заголовок (напр. Встреча)" class="handwritten-text" style="min-height: auto; font-weight: bold; border-bottom: 1px dashed #ccc; margin-bottom: 5px;">
+                <textarea id="timelineDesc" placeholder="Маленькое описание..." class="handwritten-text"></textarea>
+                <button class="btn-save-polaroid" id="saveTimelineBtn" onclick="saveTimelineEvent()">сохранить событие</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/browser-image-compression/2.0.2/browser-image-compression.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <script src="posts.js"></script>    <script src="gallery.js"></script>  <script src="timeline.js"></script> <script src="app.js"></script>      </body>
+</html>

@@ -1,0 +1,833 @@
+/* ===== ГЛОБАЛЬНЫЕ НАСТРОЙКИ ===== */
+:root {
+    --accent: #ff4b5c; /* Цвет сердечка/кнопок */
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+}
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: white;
+    background: #000;
+    overflow-y: auto; /* Скролл только здесь */
+    min-height: 100vh;
+}
+body::after {
+    display: none;
+}
+
+
+
+/* ===== СТИЛИ ФОНА И НАВИГАЦИИ ===== */
+/* ФОН */
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    filter: none; /* Убираем затемнение и обесцвечивание */
+    transition: opacity 0.6s ease-in-out, filter 0.6s ease-in-out;
+    will-change: opacity, src;
+}
+
+/* ШАПКА */
+header {
+    background: transparent !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-start;
+    padding: 20px 0;
+    pointer-events: none; /* Пропускает клики к ленте сквозь пустоту */
+}
+header nav, .nav-btn, .year-link {
+    pointer-events: all;
+}
+header nav {
+    margin-left: 500px; /* Укажи здесь любое количество пикселей от левого края */
+}
+.header button {
+    background: none; border: none;
+    color: #ccc; font-size: 16px; cursor: pointer;
+    transition: 0.3s;
+}
+.header button:hover { color: white; }
+.nav-btn {
+    /* Основной способ сделать жирным */
+    font-weight: 650 !important; 
+    font-size: 1.5em;
+    margin: 0 10px;
+    /* Дополнительный способ (визуальное утолщение) */
+    -webkit-font-smoothing: antialiased;
+    text-shadow: 0 0 1px white; /* Создает эффект микро-объема */
+    
+    /* Убираем стандартные рамки кнопки */
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+.nav-btn b {
+    font-weight: 800; /* Максимально жирный */
+}
+
+
+
+/* ===== ВСЕ КНОПКИ ДОБАВЛЕНИЯ ===== */
+/* Упорядочиваем кнопки в ряд по центру */
+.admin-controls {
+    position: fixed;
+    bottom: 310px;       /* Отступ от низа */
+    left: 30%;          /* Центр экрана */
+    transform: translateX(-50%); /* Точное выравнивание */
+    display: none;      /* Будет включаться через JS только на Главной */
+    gap: 20px;          /* Расстояние между кнопками */
+    z-index: 2000;
+    align-items: center;
+}
+
+/* Общий стиль для всех кнопок в этой панели */
+.main-add-btn, #addGalleryBtn {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* 1. Кнопка "Add Memory" (Бирюзово-серая) */
+#addMemoryBtn {
+    background: linear-gradient(135deg, #a3bac7 0%, #819eac 50%, #667c8a 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Кнопка "Add Event" (ПРОЗРАЧНАЯ С БЕЛОЙ ОБВОДКОЙ) */
+#addTimelineBtn {
+    background: transparent !important; /* Внутри пусто */
+    color: white !important;           /* Белый текст */
+    border: 2px solid #ffffff !important; /* Белая окантовка */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. Кнопка "Add Photo" (Черная полупрозрачная) */
+#addGalleryBtn {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* ЭФФЕКТЫ ПРИ НАВЕДЕНИИ */
+#addMemoryBtn:hover, #addTimelineBtn:hover, #addGalleryBtn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Специфический эффект для прозрачной кнопки при наведении */
+#addTimelineBtn:hover {
+    background: rgba(255, 255, 255, 0.1) !important; /* Легкий отблеск при наведении */
+}
+
+
+
+
+/* ===== ФОРМА ДОБАВЛЕНИЯ ПОСТОВ ===== */
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Кнопка закрытия (крестик) */
+.close-outside {
+    position: absolute;
+    top: 30px;      /* Отступ от верха рамки */
+    right: 480px;    /* Отступ от правого края рамки */
+    
+    background: none;
+    border: none;
+    color: #bbbbbb;    /* Темный цвет, чтобы было видно на белом фоне */
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 2100;  /* Выше самой формы */
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.close-outside:hover {
+    color: #ffffff; /* Краснеет при наведении */
+    transform: scale(1.2) rotate(90deg);
+}
+
+/* Карточка Полароид */
+.polaroid-frame {
+    background: #ffffff;
+    width: 450px;
+    padding: 20px 20px 15px 20px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Само изображение в превью */
+#galleryImagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Фото впишется целиком без обрезки и искажений */
+    background: #ebebeb;    /* Темный фон для контраста, если фото узкое */
+}
+
+/* Дата над фото справа */
+.polaroid-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+.handwritten-date {
+    font-family: "Segoe Script", "Comic Sans MS", cursive;
+    border: none;
+    background: transparent;
+    text-align: right;
+    font-size: 14px;
+    color: #555;
+    outline: none;
+    width: 100%;
+}
+
+/* Квадрат под фото */
+.polaroid-photo-area {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #f7f7f7;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+#imagePreview { width: 100%; height: 100%; object-fit: cover; }
+.polaroid-placeholder { text-align: center; color: #ccc; }
+.plus-icon { font-size: 40px; display: block; line-height: 1; }
+
+/* Нижнее поле для текста */
+.polaroid-footer {
+    padding-top: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.handwritten-text {
+    width: 100%;
+    min-height: 100px;
+    border: none !important;
+    background: transparent !important;
+    resize: none;
+    outline: none;
+    font-family: "Segoe Script", "Comic Sans MS", cursive;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Кнопка сохранить снизу справа */
+.btn-save-polaroid {
+    align-self: flex-end;
+    background: transparent;
+    border: none;
+    color: #819eac;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 10px 0 5px 0;
+    transition: 0.2s;
+}
+.btn-save-polaroid:hover { color: #5a7380; transform: scale(1.05); }
+
+
+
+
+
+/* ===== ПАНЕЛЬ ГОДОВ ===== */
+#yearsPanel {
+    position: fixed;
+    left: 20px;
+    top: 100px;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    
+    /* СДЕЛАЛИ ШИРЕ */
+    min-width: 150px; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#yearsPanel h3 {
+    margin-top: 0;
+    font-size: 2rem;
+    color: #ffffff;
+    /* Тоже сделаем заголовок жирным */
+    font-weight: 800; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#yearsPanel.open {
+    left: 20px;
+}
+
+.year-link {
+    padding: 10px 15px; /* Увеличили внутренние отступы */
+    margin: 8px 0;
+    cursor: pointer;
+    color: #ffffff; /* Цвет неактивных годов (спокойный серый) */
+    transition: 0.3s all ease;
+    border-radius: 8px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    
+    /* СДЕЛАЛИ ЖИРНЫМИ */
+    font-weight: 800; 
+    font-size: 1.5rem;
+    display: block; /* Чтобы кнопка занимала всю ширину панели */
+}
+
+.year-link:hover {
+    /* Фон при наведении (светло-бирюзовый) */
+    background: rgba(64, 224, 208, 0.1); 
+    color: #008080; /* Темно-бирюзовый текст */
+    transform: translateX(8px);
+}
+
+.year-link.active {
+    /* ВЫДЕЛЕННЫЙ ГОД — БИРЮЗОВЫЙ */
+    background: rgba(64, 224, 208, 0.6); /* Бирюзовый (Turquoise) */
+    color: white;
+    border-left: 5px solid #00ced1; /* Акцентная линия поярче */
+    padding-left: 20px;
+    box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
+}
+
+
+
+
+
+/* ===== КОНТЕНТ (ЛЕНТА) ===== */
+/* Контейнер ленты */
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    padding-top: 150px; /* Оставляем место для шапки */
+    padding-bottom: 100px; 
+    min-height: 100vh; /* Важно: чтобы контейнер всегда был во весь экран */
+    position: relative;
+    z-index: 1;
+    /* ЭФФЕКТ ИСЧЕЗНОВЕНИЯ ПРИ СКРОЛЛЕ */
+    -webkit-mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 150px, 
+        black 100%
+    );
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 150px, 
+        black 100%
+    );
+    overflow-y: visible;
+    height: auto;
+    scroll-behavior: smooth;
+}
+
+/* Общий стиль карточки */
+.post-card {
+    background: #ffffff;
+    width: 800px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    view-timeline-name: --post;
+    view-timeline-axis: block;
+    animation: fade-out linear both;
+    animation-timeline: --post;
+    /* exit 0% — начинает исчезать, как только касается верха */
+    /* exit 50% — полностью исчезает, пройдя половину своей высоты за край */
+    animation-range: exit 0% exit 10%; 
+    transition: opacity 0.5s ease; 
+}
+
+/* Сама формула исчезновения */
+@keyframes fade-out {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95) translateY(-20px); }
+}
+/* Анимация затухания для контента при переключении */
+.fade-out {
+    opacity: 0 !important;
+    transition: opacity 0.3s ease-out;
+}
+.fade-in {
+    opacity: 1 !important;
+    transition: opacity 0.4s ease-in;
+}
+/* Контейнер для основного контента (фото + текст) */
+.card-main-row {
+    display: flex;
+    flex-direction: column; /* По умолчанию для ландшафта */
+    gap: 5px;
+    width: 100%;
+}
+/* Режим для ВЕРТИКАЛЬНЫХ фото: фото слева, текст справа */
+.portrait-mode .card-main-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px
+}
+.portrait-mode .post-media {
+    width: 100%;       /* В вертикальном режиме фото на всю ширину */
+    max-height: 600px; /* Ограничиваем высоту, чтобы не занимало весь экран */
+}
+.post-card.portrait-mode .post-media {
+    width: 50%; /* Фото занимает 40% ширины */
+}
+
+/* Режим для ГОРИЗОНТАЛЬНЫХ фото: текст сверху, фото снизу */
+.post-card.landscape-mode {
+    flex-direction: column;
+}
+
+.post-card.landscape-mode .post-media {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/* Стили медиа */
+.post-media {
+    flex-shrink: 0; /* ЗАПРЕЩАЕТ уменьшение фото при избытке текста */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.post-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 10px; /* Чуть скруглим само фото */
+    object-fit: cover; /* Сохраняет пропорции, заполняя пространство */
+}
+
+/* Текстовая часть */
+.post-content {
+    display: block;
+    min-height: 0; /* Чтобы не растягивалось сверх меры */
+}
+
+/* 1. Общие стили шрифта для даты (и в форме, и в постах) */
+.handwritten-date {
+    font-family: "Segoe Script", "Comic Sans MS", cursive;
+    font-size: 12px;
+    color: #999;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+/* 2. Стили ТОЛЬКО для даты ВНУТРИ карточки поста в ленте */
+.post-card .handwritten-date {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    margin: 0;
+    z-index: 10;
+    text-align: right;
+}
+/* 3. Стили ТОЛЬКО для поля ввода даты ВНУТРИ формы */
+.polaroid-header .handwritten-date {
+    position: static; /* Возвращает в нормальный поток внутри формы */
+    width: 100%;
+    text-align: right;
+    padding: 5px;
+}
+.handwritten-text {
+    font-family: "Segoe Script", "Comic Sans MS", cursive;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+/* Кнопка удаления */
+.delete-btn-simple {
+    background: transparent;
+    border: none;
+    color: #cca3a3;
+    font-family: "Segoe Script", "Comic Sans MS", cursive;
+    font-size: 11px;
+    cursor: pointer;
+    align-self: flex-end; /* Слева */
+    margin-top: 15px;       /* Отступ от контента */
+    padding: 5px 0;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+.delete-btn-simple:hover { opacity: 1; color: #ff4d4d; }
+
+
+
+
+
+/* ===== ГАЛЕРЕЯ ===== */
+/* Сетка галереи */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    width: 90%;
+    max-width: 1000px;
+    padding: 20px;
+}
+
+.gallery-item {
+    position: relative; /* Критично для позиционирования крестика */
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Привязка к скроллу */
+    view-timeline: --photo-timeline block root;
+
+    /* Применяем анимацию */
+    animation: revealAndFade linear both;
+    
+    /* Указываем диапазоны: и для появления, и для исчезновения */
+    animation-range: entry 0% entry 30%, exit 0% exit 10%;
+}
+
+.gallery-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Окно на весь экран */
+.full-image-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 3000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+}
+
+.full-image-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+/* Стили кнопки удаления */
+.gallery-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.7); /* Полупрозрачный белый */
+    color: #333;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Скрываем кнопку по умолчанию */
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    z-index: 10; /* Чтобы была поверх фото */
+}
+
+/* Показываем кнопку при наведении на родительский .gallery-item */
+.gallery-item:hover .gallery-delete-btn {
+    opacity: 1;
+}
+
+/* Эффект при наведении на саму кнопку */
+.gallery-delete-btn:hover {
+    background: rgba(73, 73, 73, 0.9); /* Красный фон при наведении */
+    color: white;
+}
+
+
+
+
+
+
+
+/* ===== ТАЙМЛАЙН ===== */
+
+/* ===== ФОРМА ТАЙМЛАЙНА ===== */
+/* 1. Общий контейнер */
+.timeline-wrapper {
+    position: relative;
+    padding: 100px 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
+/* 2. Центральная нить */
+.timeline-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.9) 20%, 
+        rgba(255,255,255,0.9) 80%, 
+        rgba(255,255,255,0) 100%);
+    /* Мягкое неоновое свечение нити */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.2);
+    z-index: 1;
+}
+
+/* 1. Контейнер события */
+.timeline-event {
+    position: relative;
+    display: flex;
+    width: 100%;
+    margin-bottom: 120px;
+    align-items: center;
+    box-sizing: border-box;
+    z-index: 2;
+    view-timeline: --event-timeline block;
+    view-timeline-axis: block;
+}
+
+/* 2. Бадж с датой - ЖЕСТКО В ЦЕНТРЕ */
+.timeline-date-badge {
+    position: absolute;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: rgba(0, 0, 0, 0.2); /* Слегка затемняем фон (вместо чисто белого) */
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    -webkit-backdrop-filter: blur(12px);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 30px;
+    z-index: 100;
+    font-size: 1.1rem;
+    font-weight: 900; /* Максимально жирный */
+    white-space: nowrap;
+    /* Свечение баджа */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 3. Две колонки по 50% */
+.left-side, .right-side {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.left-side { justify-content: flex-end; padding-right: 100px; } /* Зазор для ветки */
+.right-side { justify-content: flex-start; padding-left: 100px; }
+
+/* 4. КАРТОЧКА */
+.timeline-card {
+    background: rgba(255, 255, 255, 0.92);
+    color: #333;
+    padding: 20px;
+    border-radius: 25px;
+    width: 380px;
+    min-width: 380px;
+    position: relative;
+    z-index: 10;
+    
+    /* Начальное положение */
+    transform: translateY(0); 
+    
+    /* ОДИНАКОВОЕ время и кривая анимации для всех свойств */
+    transition: transform 0.4s ease-out, 
+                box-shadow 0.4s ease-out, 
+                background 0.4s ease-out;
+    
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 25px rgba(255, 255, 255, 0.3);
+}
+
+/* 5. ВЕТКИ (Только через ::before) */
+.timeline-card::before {
+    content: '';
+    position: absolute;
+    top: 50%; /* Центр по вертикали */
+    width: 100px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    
+    /* Начальное положение: только центровка */
+    transform: translateY(-50%); 
+    
+    /* ВАЖНО: время анимации ДОЛЖНО СОВПАДАТЬ с карточкой */
+    transition: transform 0.4s ease-out, 
+                background 0.4s ease-out, 
+                box-shadow 0.4s ease-out;
+    
+    z-index: -1;
+}
+
+/* Направление веток */
+.left-side .timeline-card::before {
+    right: -100px;
+    left: auto;
+}
+
+.right-side .timeline-card::before {
+    left: -100px;
+    right: auto;
+}
+
+/* Эффекты при наведении */
+.timeline-card:hover {
+    transform: translateY(-20px); /* Поднимаем на 20px */
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25), 0 0 45px rgba(255, 255, 255, 0.5);
+}
+
+.timeline-card:hover::before {
+    /* Фокус: -50% (центровка) + 20px (компенсация подъема карточки) */
+    /* Используем простую сумму без сложных calc, если это возможно */
+    transform: translateY(calc(-50% + 20px));
+    
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+}
+
+/* Общий контейнер для фото и текста (верхняя часть) */
+.timeline-main-content {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+/* Контейнер для текста, чтобы он занимал оставшееся место */
+.timeline-text-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* СТИЛЬ ДЛЯ ВЕРТИКАЛЬНЫХ ФОТО (Полароидный вид слева) */
+.timeline-img-vertical {
+    width: 130px; /* Фиксированная ширина */
+    height: 180px; /* Фиксированная высота */
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0; /* Чтобы текст не сжимал картинку */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* СТИЛЬ ДЛЯ ГОРИЗОНТАЛЬНЫХ ФОТО (Широкий вид снизу) */
+.timeline-img-horizontal {
+    width: 100%;
+    height: auto;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 15px; /* Отступ от блока с текстом */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Чтобы при наведении фото тоже чуть "оживали" вместе с карточкой */
+.timeline-card:hover img {
+    filter: brightness(1.05);
+    transition: filter 0.4s ease;
+}
+
+
+
+
+/* КРЕСТИК УДАЛЕНИЯ */
+.timeline-delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 75, 75, 0.8); /* Полупрозрачный красный */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    z-index: 110; /* Выше баджа даты на всякий случай */
+    
+    /* Скрываем по умолчанию */
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+/* Показываем при наведении на карточку */
+.timeline-card:hover .timeline-delete-btn {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.timeline-delete-btn:hover {
+    background: #ff4b4b;
+    transform: scale(1.2);
+}
+
