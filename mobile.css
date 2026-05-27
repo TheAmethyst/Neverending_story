@@ -508,15 +508,15 @@ input[type="date"], input[type="text"], textarea {
 /* ===== 6. ПАНЕЛЬ ГОДОВ (ВТОРОЙ ТАББАР) ===== */
 #yearsPanel {
     position: fixed;
-    /* Размещаем ровно над основным тапбаром (высота 60px) */
-    bottom: calc(70px + env(safe-area-inset-bottom)); 
+    bottom: calc(60px + env(safe-area-inset-bottom)); 
     left: 0;
     width: 100%;
+    height: 45px; /* Фиксируем общую высоту панели */
     background: #000000 !important;
     display: flex;
     flex-direction: row;
     overflow-x: auto;
-    padding: 10px 15px;
+    padding: 0 !important; /* Убираем отступы контейнера, чтобы выделение касалось краев */
     box-sizing: border-box;
     white-space: nowrap;
     z-index: 9998;
@@ -527,20 +527,23 @@ input[type="date"], input[type="text"], textarea {
     display: none;
 }
 
-/* Стили годов (белые и жирные) */
+/* Стили годов */
 .year-link {
-    display: inline-block;
-    margin: 0 8px 0 0;
-    padding: 6px 16px;
+    display: inline-flex; /* Используем flex для центрирования текста по вертикали */
+    align-items: center;
+    height: 100%; /* Растягиваем на всю высоту тапбара */
+    margin: 0 !important; /* Убираем пустые разрывы между блоками */
+    padding: 0 20px !important; /* Создаем зону выделения (текст + пространство по бокам) */
     font-size: 1.1rem;
     font-weight: 700 !important;
     color: #ffffff !important;
-    border-radius: 12px;
+    border-radius: 0 !important; /* Убираем скругления, делаем строгий прямоугольник */
     background: transparent;
     transition: background 0.3s ease;
+    cursor: pointer;
 }
 
-/* Выделение активного года заданным градиентом */
+/* Выделение активного года */
 .year-link.active {
     background: linear-gradient(135deg, rgba(64, 224, 208, 0.6) 0%, #00ced1 100%) !important;
 }
