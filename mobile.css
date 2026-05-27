@@ -430,7 +430,7 @@ input[type="date"], input[type="text"], textarea {
 .post-card {
     width: 100%;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 15px;
     position: relative !important;
     margin-bottom: 25px !important; 
     border-radius: 15px !important;
@@ -489,7 +489,7 @@ input[type="date"], input[type="text"], textarea {
 /* 4. Позиционирование кнопки "удалить" */
 .post-card {
     position: relative;
-    padding-bottom: 45px !important; /* Резервируем место снизу для кнопки */
+    padding-bottom: 20px !important; /* Резервируем место снизу для кнопки */
 }
 .post-card .delete-btn-simple {
     position: absolute !important;
