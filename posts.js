@@ -40,31 +40,63 @@ window.compressImage = async function(file) {
 // ===== 3. ОСНОВНЫЕ ДЕЙСТВИЯ (ПОСТЫ) =====
 // Загрузка постов
 let currentSelectedYear = null;
-window.loadPosts = async function() {
+
+window.loadPosts = async function(targetYear = null) {
     const content = document.getElementById("content");
-    if(content) content.innerHTML = "<div class='loader'>Синхронизируем хронологию...</div>";
-    const { data, error } = await db.from("posts").select("*");
-    if (error) {
-        console.error(error);
+    if (content) content.innerHTML = "<div class='loader'>Синхронизируем хронологию...</div>";
+
+    // 1. Запрашиваем только колонку 'year' для быстрого построения меню
+    const { data: yearsData, error: yearsError } = await db.from("posts").select("year");
+    if (yearsError) {
+        console.error("Ошибка загрузки годов:", yearsError);
         return;
     }
-    // СОРТИРОВКА: От самого старого к самому новому (Задача №1)
-    const sortedData = data.sort((a, b) => {
+
+    // 2. Установка текущего года
+    if (targetYear) {
+        currentSelectedYear = targetYear;
+    } else if (!currentSelectedYear && yearsData.length > 0) {
+        // Если год не выбран, берем максимальный (самый новый)
+        currentSelectedYear = Math.max(...yearsData.map(p => p.year));
+    }
+
+    // Передаем массив годов для отрисовки панели тапбара
+    if (typeof updateYearsMenu === 'function') {
+        updateYearsMenu(yearsData);
+    }
+
+    if (!currentSelectedYear) {
+        if (content) content.innerHTML = "<p>Нет записей</p>";
+        return;
+    }
+
+    // 3. Скачиваем посты ТОЛЬКО для выбранного года
+    const { data: postsData, error: postsError } = await db.from("posts")
+        .select("*")
+        .eq("year", currentSelectedYear);
+
+    if (postsError) {
+        console.error("Ошибка загрузки постов:", postsError);
+        return;
+    }
+
+    // 4. Сортировка отфильтрованного массива на стороне клиента
+    const sortedData = postsData.sort((a, b) => {
         const parseDate = (dateStr) => {
+            if (!dateStr) return 0;
             const [d, m, y] = dateStr.split('.').map(Number);
             return new Date(y, m - 1, d);
         };
         return parseDate(a.date) - parseDate(b.date);
     });
-    // ОПРЕДЕЛЕНИЕ ГОДА ПО УМОЛЧАНИЮ (Задача №3)
-    if (!currentSelectedYear && sortedData.length > 0) {
-        // Берем самый большой (последний по хронологии) год из имеющихся
-        currentSelectedYear = Math.max(...sortedData.map(p => p.year));
-    }
-    // Сохраняем все посты глобально, чтобы фильтровать без новых запросов к БД
+
+    // 5. Рендеринг интерфейса
     window.allPosts = sortedData;
-    updateYearsMenu(sortedData);
-    renderFilteredPosts();
+    
+    if (typeof renderFilteredPosts === 'function') {
+        renderFilteredPosts();
+    }
+
     if (currentSelectedYear && typeof window.updateBackground === 'function') {
         window.updateBackground(currentSelectedYear);
     }
