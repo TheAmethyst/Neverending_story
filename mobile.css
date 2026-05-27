@@ -430,7 +430,11 @@ input[type="date"], input[type="text"], textarea {
 .post-card {
     width: 100%;
     box-sizing: border-box;
-    padding: 15px;
+    padding: 20px;
+    position: relative !important;
+    margin-bottom: 25px !important; 
+    border-radius: 15px !important;
+    
 }
 .portrait-mode .card-main-row {
     flex-direction: column;
@@ -453,7 +457,7 @@ input[type="date"], input[type="text"], textarea {
     width: 100%;
     /* Высота равна системной зоне, либо 25px, если браузер не передает данные */
     height: max(5px, env(safe-area-inset-top)); 
-    background: #000000; /* Сплошной черный цвет без размытия */
+    background: #00000000; /* Сплошной черный цвет без размытия */
     z-index: 9999;
 }
 /* Смещение контента вниз, чтобы он не упирался в защитную полосу */
@@ -461,9 +465,18 @@ input[type="date"], input[type="text"], textarea {
     padding-top: calc(15px + env(safe-area-inset-top)) !important;
 }
 /* 2. Скругление краев у фотографий в постах */
+.post-card .post-media {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    /* Убираем возможные лишние отступы и фоны */
+    background: transparent !important;
+    margin: 0 !important;
+}
 .post-card .post-media img {
-    border-radius: 12px;
-    object-fit: cover;
+    border-radius: 12px !important;
+    object-fit: cover !important;
+    display: block !important;
+    width: 100% !important;
 }
 /* 3. Очистка фона текста в постах (отмена стилей от полей ввода) */
 .post-card .handwritten-text {
@@ -478,20 +491,21 @@ input[type="date"], input[type="text"], textarea {
     position: relative;
     padding-bottom: 45px !important; /* Резервируем место снизу для кнопки */
 }
-.delete-btn-simple {
-    position: absolute;
-    bottom: 12px;
-    right: 15px;
-    width: auto !important; /* Сброс растягивания на 100% */
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: rgba(255, 75, 75, 0.1) !important;
-    color: #ff4b5c !important;
-    border: 1px solid rgba(255, 75, 75, 0.3) !important;
-    border-radius: 8px;
-    cursor: pointer;
+.post-card .delete-btn-simple {
+    position: absolute !important;
+    bottom: 12px !important;
+    right: 15px !important;
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: normal !important;
+    background: transparent !important; /* Прозрачный фон */
+    color: #888888 !important; /* Серый текст */
+    border: none !important; /* Полное удаление рамки */
+    box-shadow: none !important; /* Защита от системных теней */
     text-transform: lowercase;
+    cursor: pointer;
+    transition: color 0.2s ease !important;
 }
 
 
