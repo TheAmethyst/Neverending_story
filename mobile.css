@@ -160,6 +160,10 @@ body {
     gap: 20px;
 }
 
+
+
+
+
 /* ===== 3. КНОПКИ УПРАВЛЕНИЯ (ГЛАВНАЯ СТРАНИЦА) ===== */
 .admin-controls {
     position: fixed;
@@ -428,21 +432,69 @@ input[type="date"], input[type="text"], textarea {
     box-sizing: border-box;
     padding: 15px;
 }
-
 .portrait-mode .card-main-row {
     flex-direction: column;
     gap: 10px;
 }
-
 .post-card.portrait-mode .post-media {
     width: 100%;
     max-height: 400px;
 }
-
 .handwritten-text {
     font-size: 15px;
 }
-
+/* ===== 9. ИСПРАВЛЕНИЯ ЛЕНТЫ ПОСТОВ ===== */
+/* 1. Защита зоны статус-бара (часы, батарея) */
+.top-fade-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Используем системную переменную челки (notch) или минимум 40px */
+    height: max(40px, env(safe-area-inset-top)); 
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: block;
+}
+/* Смещение контента вниз, чтобы он не упирался в защитную полосу */
+#content {
+    padding-top: max(50px, calc(20px + env(safe-area-inset-top))) !important;
+}
+/* 2. Скругление краев у фотографий в постах */
+.post-card .post-media img {
+    border-radius: 12px;
+    object-fit: cover;
+}
+/* 3. Очистка фона текста в постах (отмена стилей от полей ввода) */
+.post-card .handwritten-text {
+    background-color: transparent !important;
+    border: none !important;
+    color: #333333 !important; /* Темный текст для читаемости на белой карточке */
+    padding: 0;
+    margin-top: 10px;
+}
+/* 4. Позиционирование кнопки "удалить" */
+.post-card {
+    position: relative;
+    padding-bottom: 45px !important; /* Резервируем место снизу для кнопки */
+}
+.delete-btn-simple {
+    position: absolute;
+    bottom: 12px;
+    right: 15px;
+    width: auto !important; /* Сброс растягивания на 100% */
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(255, 75, 75, 0.1) !important;
+    color: #ff4b5c !important;
+    border: 1px solid rgba(255, 75, 75, 0.3) !important;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: lowercase;
+}
 
 
 
