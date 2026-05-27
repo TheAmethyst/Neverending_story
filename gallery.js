@@ -222,22 +222,23 @@ window.deleteGalleryPhoto = async function(photoId) {
 
 window.renderGallery = function(images) {
     const content = document.getElementById("content");
+    if (!content) return;
     content.innerHTML = "";
 
     const grid = document.createElement("div");
     grid.className = "gallery-grid";
 
-    images.forEach(img => {
+    images.forEach(p => {
         const item = document.createElement("div");
         item.className = "gallery-item";
         
-        // Добавляем HTML для фото И кнопку удаления
         item.innerHTML = `
-            <img src="${img.image}" onclick="window.openFullImage('${img.image}')" loading="lazy">
-            <button class="gallery-delete-btn" onclick="window.deleteGalleryPhoto(${img.id})">
+            <img src="${p.image}" loading="lazy" onclick="openFullScreenImage('${p.image}', ${p.id})">
+            <button class="gallery-delete-btn" onclick="event.stopPropagation(); deleteGalleryPhoto(${p.id}, '${p.image}')">
                 &times;
             </button>
         `;
+        
         grid.appendChild(item);
     });
 
