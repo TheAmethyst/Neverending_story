@@ -39,6 +39,7 @@ window.compressImage = async function(file) {
 
 // ===== 3. ОСНОВНЫЕ ДЕЙСТВИЯ (ПОСТЫ) =====
 // Загрузка постов
+// Объявление глобальной переменной (обязательно вне функции)
 let currentSelectedYear = null;
 
 window.loadPosts = async function(targetYear = null) {
