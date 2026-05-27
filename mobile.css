@@ -564,73 +564,50 @@ input[type="date"], input[type="text"], textarea {
 
 
 
-/* ===== 7. ГАЛЕРЕЯ ===== */
+/* ===== ГАЛЕРЕЯ ===== */
+
+/* Сетка: строго 3 колонки с принудительным сжатием больших фото */
 .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
-    padding: 0;
-    gap: 10px;
-    box-sizing: border-box;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* Ключевое исправление */
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
+/* Контейнер отдельной фотографии */
 .gallery-item {
-    animation-range: entry 0% entry 15%, exit 0% exit 10%;
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
 }
 
-/* ===== 8. ТАЙМЛАЙН ===== */
-.timeline-wrapper {
-    padding: 20px 0;
+/* Жесткое ограничение самого изображения */
+.gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
 }
 
-.timeline-wrapper::before {
-    left: 20px;
+/* Сброс эффектов увеличения карточки */
+.gallery-item:hover {
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-.timeline-event {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 50px;
-}
-
-.timeline-date-badge {
-    left: 20px !important;
-    transform: translate(-50%, -50%) !important;
-    font-size: 0.85rem;
-    padding: 5px 12px;
-}
-
-.left-side, .right-side {
-    width: 100%;
-    padding-left: 45px !important;
-    padding-right: 0 !important;
-    justify-content: flex-start;
-    box-sizing: border-box;
-}
-
-.timeline-card {
-    width: 100%;
-    min-width: 100%;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-.left-side .timeline-card::before,
-.right-side .timeline-card::before {
-    width: 25px;
-    left: -25px !important;
-    right: auto !important;
-}
-
-.timeline-main-content {
-    flex-direction: column;
-}
-
-.timeline-img-vertical {
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-}
-
-.timeline-img-horizontal {
-    margin-top: 10px;
+/* Адаптация кнопки удаления (постоянная видимость) */
+.gallery-delete-btn {
+    opacity: 0.8 !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 16px !important;
+    top: 6px !important;
+    right: 6px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
 }
