@@ -1,20 +1,24 @@
 window.loadGallery = async function() {
-    updateDynamicHeader('gallery');
     const content = document.getElementById("content");
     if (!content) return;
     content.innerHTML = "<div class='loader'>Загрузка фото...</div>";
 
-    // Обращаемся к НОВОЙ таблице gallery без лишних фильтров
+    // 1. Указываем только нужные колонки (сужаем объем данных)
+    // 2. Исключаем записи, где нет ссылки на фото
+    // 3. Ставим лимит на первую выгрузку (например, 60 последних фото)
     const { data, error } = await window.db
         .from("gallery")
-        .select("*")
-        .order('created_at', { ascending: false });
+        .select("id, image") // Убедись, что колонка с ссылкой называется 'image'
+        .not("image", "is", null) 
+        .order('created_at', { ascending: false })
+        .limit(60); 
 
     if (error) {
-        console.error("Ошибка галереи:", error); // Теперь здесь будет чисто
-        content.innerHTML = "Ошибка загрузки";
+        console.error("Ошибка галереи:", error); 
+        content.innerHTML = "<p>Ошибка загрузки</p>";
         return;
     }
+    
     renderGallery(data);
 };
 
