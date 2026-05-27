@@ -804,7 +804,7 @@ input[type="date"], input[type="text"], textarea {
 }
 
 .timeline-date-badge {
-    background-color: #000000 !important;
+    background-color: #000000ae !important;
     border: 1px solid #ffffff !important;
     border-radius: 8px !important;
     color: #ffffff !important;
