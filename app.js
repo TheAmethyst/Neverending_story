@@ -11,15 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. НАВИГАЦИЯ
 // Переключение страниц
 window.openPage = function(page) {
-    const navButtons = document.querySelectorAll('header nav .nav-btn');
-    navButtons.forEach(btn => {
-        // Проверяем, содержит ли атрибут onclick имя текущей страницы
-        if (btn.getAttribute('onclick').includes(`'${page}'`)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
     const content = document.getElementById("content");
     const panel = document.getElementById("yearsPanel");
     
