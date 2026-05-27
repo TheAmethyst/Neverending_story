@@ -1,3 +1,71 @@
+/* ===== БАЗОВАЯ СТРУКТУРА (Восстановление) ===== */
+
+/* Фиксация фона */
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+/* Скрытие модальных окон по умолчанию */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Скрытие панели кнопок по умолчанию (управляется через JS) */
+.admin-controls {
+    display: none;
+}
+
+/* Базовая структура карточек (которая осталась в desktop.css) */
+.post-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.card-main-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.post-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.post-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
+
+
 /* ===== 1. НАВИГАЦИЯ (BOTTOM TAB BAR) ===== */
 header {
     position: fixed;
@@ -5,13 +73,15 @@ header {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 70px;
-    background: rgba(20, 20, 20, 0.85) !important;
+    height: 60px;
+    background: rgba(15, 15, 15, 0.95) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 9999;
     padding: 0 !important;
+    /* Учитывает "челку" и нижнюю полосу управления на современных смартфонах */
+    padding-bottom: env(safe-area-inset-bottom) !important; 
     display: flex;
     pointer-events: all;
 }
@@ -22,21 +92,33 @@ header nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 0 10px;
 }
 
 .nav-btn {
-    font-size: 1rem !important;
-    margin: 0 !important;
-    padding: 10px 5px;
+    background: none;
+    border: none;
+    color: #777777; /* Цвет неактивных элементов */
+    font-size: 10px !important; /* Мелкий шрифт под иконкой */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* Расстояние между иконкой и текстом */
     flex: 1;
-    text-align: center;
-    color: #cccccc;
+    height: 100%;
+    padding: 0;
+    cursor: pointer;
+    text-shadow: none !important; /* Сброс десктопного свечения */
 }
 
-.nav-btn:active {
-    transform: scale(0.95);
-    color: #ffffff;
+.nav-btn .material-icons {
+    font-size: 26px;
+}
+
+.nav-btn:active, 
+.nav-btn.active {
+    color: #ffffff; /* Цвет активного элемента */
 }
 
 /* ===== 2. КОНТЕНТНАЯ ОБЛАСТЬ ===== */
@@ -53,40 +135,267 @@ body {
     gap: 20px;
 }
 
-/* ===== 3. КНОПКИ УПРАВЛЕНИЯ ===== */
+/* ===== 3. КНОПКИ УПРАВЛЕНИЯ (ГЛАВНАЯ СТРАНИЦА) ===== */
 .admin-controls {
     position: fixed;
-    bottom: 90px; /* Над Tab Bar */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.main-add-btn, #addGalleryBtn {
-    width: 100%;
+    top: 50%; /* Ровно посередине экрана по вертикали */
+    left: 0;   /* Прижаты к левому краю */
+    transform: translateY(-50%); /* Выравнивание по центру относительно собственной высоты */
+    width: 66.66%; /* Занимают ровно две трети ширины экрана */
+    padding-left: 15px; /* Небольшой эстетический отступ, чтобы кнопки не упирались в край стекла телефона */
     box-sizing: border-box;
-    text-align: center;
-    padding: 15px;
-    font-size: 1rem;
+    flex-direction: column;
+    gap: 15px; /* Отступы между кнопками в колонке */
+    z-index: 2000;
 }
 
-/* ===== 4. МОДАЛЬНЫЕ ОКНА ===== */
+/* Общие структурные стили для мобильных кнопок добавления */
+.main-add-btn, #addGalleryBtn {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    width: 100% !important; /* Растягиваются на всю ширину родительского контейнера (то есть на 2/3 экрана) */
+    box-sizing: border-box;
+    padding: 14px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* 1. Кнопка "Add Memory" (Бирюзово-серая) */
+#addMemoryBtn {
+    background: linear-gradient(135deg, #a3bac7 0%, #819eac 50%, #667c8a 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Кнопка "Add Event" (ПРОЗРАЧНАЯ С БЕЛОЙ ОБВОДКОЙ) */
+#addTimelineBtn {
+    background: transparent !important;
+    color: white !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. Кнопка "Add Photo" (Черная полупрозрачная) */
+#addGalleryBtn {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* ЭФФЕКТЫ ПРИ НАЖАТИИ И НАВЕДЕНИИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+#addMemoryBtn:hover, #addTimelineBtn:hover, #addGalleryBtn:hover,
+#addMemoryBtn:active, #addTimelineBtn:active, #addGalleryBtn:active {
+    transform: translateY(-3px) scale(1.02); /* Легкий подъем при тапе */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Специфический эффект для прозрачной кнопки при нажатии */
+#addTimelineBtn:hover, #addTimelineBtn:active {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+
+
+
+
+/* ===== 4. МОДАЛЬНЫЕ ОКНА (ФОРМЫ ДОБАВЛЕНИЯ) ===== */
+.modal {
+    align-items: flex-start;
+    padding-top: 8vh;
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    background: rgba(0, 0, 0, 0.6); /* Непрозрачность снижена до 60% */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
 .polaroid-frame {
     width: 90%;
-    max-width: 350px;
-    padding: 15px 15px 10px 15px;
-    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 15px;
     box-sizing: border-box;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.584) !important; /* Полупрозрачный темный цвет */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
 }
 
+/* Крестик закрытия */
 .close-outside {
-    position: absolute;
-    right: 0;
-    top: -40px;
+    position: fixed; /* Отвязываем от карточки, фиксируем на экране */
+    top: 15px;
+    right: 15px;
     font-size: 32px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.6);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2100;
+    line-height: 0;
+    padding-bottom: 4px; /* Визуальная центровка символа крестика */
+    cursor: pointer;
 }
+
+/* Зона загрузки фото */
+.polaroid-photo-area {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent; /* Фон стал прозрачным */
+    border: 2px dashed rgba(255, 255, 255, 0.6); /* Добавлена полупрозрачная белая окантовка */
+}
+.polaroid-photo-area img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Заполняет квадрат без искажения пропорций */
+    display: block;
+}
+.polaroid-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+.plus-icon {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+
+/* Сброс системных стилей iOS/Android для полей ввода */
+input[type="date"], input[type="text"], textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.polaroid-header {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Поле даты */
+.handwritten-date {
+    font-size: 16px;
+    width: 100%;
+    padding: 5px;
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    text-align: right !important;
+}
+
+/* Нижняя часть с текстом и кнопкой */
+.polaroid-footer {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Поле текста */
+.handwritten-text {
+    font-size: 16px;
+    min-height: 80px;
+    padding: 5px;
+    border: 1px dashed transparent;
+    transition: border-color 0.2s;
+}
+
+.handwritten-text:focus {
+    border-color: #e0e0e0;
+}
+
+/* Кнопка сохранения */
+.btn-save-polaroid {
+    align-self: center;
+    background: #819eac; /* Превращаем в полноценную блочную кнопку */
+    color: #ffffff;
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-save-polaroid:active {
+    background: #667c8a;
+    transform: scale(0.98);
+}
+
+.handwritten-text, 
+#timelineTitle, 
+#timelineDesc {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    color: #000000 !important; /* Темный текст для читаемости на белом фоне */
+    border-radius: 8px;
+}
+
+.handwritten-text::placeholder,
+#timelineTitle::placeholder,
+#timelineDesc::placeholder {
+    color: #999999;
+}
+
+/* Выделение и скругление полей ввода */
+.handwritten-text, 
+#timelineTitle, 
+#timelineDesc {
+    background-color: #f7f7f7 !important; /* Непрозрачный светло-серый фон */
+    border: 1px solid #e0e0e0 !important; /* Тонкая рамка */
+    border-radius: 8px; /* Скругление краев */
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    text-align: left;
+}
+
+/* Специфичное центрирование для поля даты */
+.handwritten-date {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+
+
+
 
 /* ===== 5. ЛЕНТА ПОСТОВ ===== */
 .post-card {

@@ -85,21 +85,28 @@ window.openPage = function(page) {
     }, 300);
 };
 
-// Функция смены фона с проверкой на наличие файла
+// Функция смены фона с проверкой на наличие файла и типа устройства
 window.updateBackground = function(year) {
     const bgElement = document.getElementById('bg');
     if (!bgElement) return;
-    const yearStr = year ? year.toString() : 'main';
-    const primarySrc = `img/${year}.jpg`;
+    
+    let primarySrc = `img/${year}.jpg`;
     const fallbackSrc = `img/main.jpg`;
-    // 1. Начинаем затухание
+
+    // Если экран мобильный (до 768px) и открыта главная страница, подменяем файл
+    if (window.innerWidth <= 768 && year === 'main') {
+        primarySrc = 'img/main_mobile.jpg';
+    }
+
+    // Начинаем затухание
     bgElement.style.opacity = "0.3"; 
+    
     const img = new Image();
     img.onload = () => {
         setTimeout(() => {
             bgElement.src = primarySrc;
             bgElement.style.opacity = "1"; // Возвращаем яркость
-        }, 300); // Небольшая задержка для красоты
+        }, 300);
     };
     img.onerror = () => {
         setTimeout(() => {
@@ -109,35 +116,6 @@ window.updateBackground = function(year) {
     };
     img.src = primarySrc;
 };
-
-// Функция смены шапки с проверкой на наличие файла
-async function updateDynamicHeader(pageType, year = null) {
-    const headerElement = document.getElementById('dynamic-header');
-    if (!headerElement) return;
-
-    // Скрываем шапку на главной странице
-    if (pageType === 'home') {
-        headerElement.style.display = 'none';
-        return;
-    }
-
-    headerElement.style.display = 'block';
-    let imageName = '';
-
-    // Логика выбора названия файла
-    if (pageType === 'posts' && year) {
-        imageName = `${year}_hat.jpg`; // Например: 2023_hat.jpg
-    } else if (pageType === 'gallery') {
-        imageName = 'gallery_hat.jpg';
-    } else if (pageType === 'timeline') {
-        imageName = 'timeline_hat.jpg';
-    }
-
-    // Устанавливаем фон
-    if (imageName) {
-        headerElement.style.backgroundImage = `url('img/${imageName}')`;
-    }
-}
 
 
 

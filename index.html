@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neverending Story</title>
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" media="screen and (min-width: 769px)" href="desktop.css">
     <link rel="stylesheet" media="screen and (max-width: 768px)" href="mobile.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="top-fade-overlay"></div>
@@ -14,10 +15,22 @@
 
     <header>
         <nav>
-            <button class="nav-btn" onclick="openPage('home')">Home</button>
-            <button class="nav-btn" onclick="openPage('history')">Love Notes</button>
-            <button class="nav-btn" onclick="openPage('gallery')">Gallery</button>
-            <button class="nav-btn" onclick="openPage('timeline')">Timeline</button>
+            <button class="nav-btn" onclick="openPage('home')">
+                <span class="material-icons">home</span>
+                <span class="tab-label">Home</span>
+            </button>
+            <button class="nav-btn" onclick="openPage('history')">
+                <span class="material-icons">book</span>
+                <span class="tab-label">Notes</span>
+            </button>
+            <button class="nav-btn" onclick="openPage('gallery')">
+                <span class="material-icons">image</span>
+                <span class="tab-label">Gallery</span>
+            </button>
+            <button class="nav-btn" onclick="openPage('timeline')">
+                <span class="material-icons">schedule</span>
+                <span class="tab-label">Timeline</span>
+            </button>
         </nav>
     </header>
 
