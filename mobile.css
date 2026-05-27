@@ -42,6 +42,10 @@ header nav {
 /* ===== 2. КОНТЕНТНАЯ ОБЛАСТЬ ===== */
 body {
     padding-bottom: 80px; /* Отступ для Tab Bar */
+    overflow-x: hidden;
+    overscroll-behavior-y: none; /* Отключает эффект натяжения при скролле сверху/снизу */
+    touch-action: pan-y; /* Разрешает только вертикальный скролл ленты, блокируя системные жесты масштабирования */
+    width: 100vw;
 }
 
 #content {
