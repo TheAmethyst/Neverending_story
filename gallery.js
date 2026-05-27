@@ -94,7 +94,7 @@ window.appendGalleryItems = function(data) {
         // ВНИМАНИЕ: скопируй структуру кнопок и onclick из твоей функции renderGallery, 
         // чтобы новые фото открывались и удалялись так же, как и первые 30.
         div.innerHTML = `
-            <img src="${img.image}" loading="lazy" onclick="openFullScreenImage('${img.image}', ${img.id})">
+            <img src="${p.image}" loading="lazy">
             <button class="gallery-delete-btn" onclick="deleteGalleryPhoto(${p.id}, '${p.image}')">&times;</button>
         `;
         
@@ -233,7 +233,7 @@ window.renderGallery = function(images) {
         
         // Добавляем HTML для фото И кнопку удаления
         item.innerHTML = `
-            <img src="${img.image}" loading="lazy" onclick="openFullScreenImage('${img.image}', ${img.id})">
+            <img src="${img.image}" onclick="window.openFullImage('${img.image}')" loading="lazy">
             <button class="gallery-delete-btn" onclick="window.deleteGalleryPhoto(${img.id})">
                 &times;
             </button>
@@ -244,36 +244,11 @@ window.renderGallery = function(images) {
     content.appendChild(grid);
 };
 
-// Открытие фото на весь экран
-window.openFullScreenImage = function(imageUrl, id) {
-    let overlay = document.getElementById('fullscreenOverlay');
-    
-    // Создаем оверлей, если его еще нет
-    if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'fullscreenOverlay';
-        overlay.className = 'full-image-overlay';
-        document.body.appendChild(overlay);
-    }
-
-    // Внедряем фото и кнопку удаления
-    overlay.innerHTML = `
-        <img src="${imageUrl}">
-        <button class="fullscreen-delete-btn" onclick="event.stopPropagation(); deleteGalleryPhoto(${id}, '${imageUrl}'); closeFullScreen()">удалить</button>
-    `;
-
-    // Закрытие при клике в любое место, кроме кнопки "удалить"
-    overlay.onclick = function(e) {
-        if (!e.target.classList.contains('fullscreen-delete-btn')) {
-            closeFullScreen();
-        }
-    };
-
-    overlay.style.display = 'flex';
-};
-
-// Закрытие полноэкранного режима
-window.closeFullScreen = function() {
-    const overlay = document.getElementById('fullscreenOverlay');
-    if (overlay) overlay.style.display = 'none';
+// И для открытия фото тоже добавь window
+window.openFullImage = function(url) {
+    const overlay = document.createElement("div");
+    overlay.className = "full-image-overlay";
+    overlay.onclick = () => overlay.remove();
+    overlay.innerHTML = `<img src="${url}">`;
+    document.body.appendChild(overlay);
 };
