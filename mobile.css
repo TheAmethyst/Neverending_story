@@ -611,3 +611,46 @@ input[type="date"], input[type="text"], textarea {
     right: 6px !important;
     background: rgba(255, 255, 255, 0.85) !important;
 }
+
+.full-image-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.95) !important; /* Глубокий черный фон */
+    z-index: 9999 !important;
+    display: none; /* Скрыто до вызова JS */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Настройки полноэкранного фото */
+.full-image-overlay img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important; /* Фото помещается целиком без обрезки */
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Компактная серая кнопка в правом нижнем углу */
+.fullscreen-delete-btn {
+    position: absolute !important;
+    bottom: 25px !important; /* Отступ от нижнего края */
+    right: 20px !important; /* Отступ от правого края */
+    background: transparent !important;
+    color: #888888 !important; /* Серый текст */
+    border: none !important; /* Без окантовки */
+    font-size: 0.9rem !important;
+    padding: 10px !important;
+    cursor: pointer;
+    z-index: 10000 !important;
+    text-transform: lowercase;
+}
+
+/* Реакция на нажатие */
+.fullscreen-delete-btn:active {
+    color: #ff4b5c !important; /* Краснеет при тапе */
+}
