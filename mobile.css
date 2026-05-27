@@ -457,7 +457,7 @@ input[type="date"], input[type="text"], textarea {
     width: 100%;
     /* Высота равна системной зоне, либо 25px, если браузер не передает данные */
     height: max(5px, env(safe-area-inset-top)); 
-    background: #000000; /* Сплошной черный цвет без размытия */
+    background: #00000000; /* Сплошной черный цвет без размытия */
     z-index: 9999;
 }
 /* Смещение контента вниз, чтобы он не упирался в защитную полосу */
@@ -466,6 +466,8 @@ input[type="date"], input[type="text"], textarea {
 }
 /* 2. Скругление краев у фотографий в постах */
 .post-card .post-media {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     /* Убираем возможные лишние отступы и фоны */
@@ -484,7 +486,9 @@ input[type="date"], input[type="text"], textarea {
     border: none !important;
     color: #333333 !important; /* Темный текст для читаемости на белой карточке */
     padding: 0;
-    margin-top: 10px;
+    margin-top: 4px !important; /* Минимальный зазор в 4px */
+    padding-top: 0 !important;
+    display: block !important;
 }
 /* 4. Позиционирование кнопки "удалить" */
 .post-card {
@@ -511,11 +515,9 @@ input[type="date"], input[type="text"], textarea {
 
 
 
-/* Увеличенный отступ снизу для контента (чтобы посты не прятались за двумя панелями) */
-#content {
-    padding: 20px 15px 130px 15px !important;
-    gap: 20px;
-}
+
+
+
 
 /* ===== 6. ПАНЕЛЬ ГОДОВ (ВТОРОЙ ТАББАР) ===== */
 #yearsPanel {
@@ -572,7 +574,7 @@ input[type="date"], input[type="text"], textarea {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* Ключевое исправление */
     gap: 10px !important;
     width: 100% !important;
-    padding: 5px !important;
+    padding: 10px !important;
     box-sizing: border-box !important;
     margin: 0 !important;
 }
@@ -653,4 +655,236 @@ input[type="date"], input[type="text"], textarea {
 /* Реакция на нажатие */
 .fullscreen-delete-btn:active {
     color: #ff4b5c !important; /* Краснеет при тапе */
+}
+
+
+
+
+
+/* ===== ТАЙМЛАЙН (АДАПТИВНЫЙ ШАХМАТНЫЙ ПОРЯДОК) ===== */
+
+/* Сжатие контейнера события */
+.timeline-event {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    position: relative !important;
+    width: 100% !important;
+    margin-bottom: 15px !important;
+}
+
+/* Распределение места: по 44% на карточки, 12% на центр (линия/дата) */
+.timeline-event .left-side,
+.timeline-event .right-side {
+    width: 44% !important; 
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Вертикализация самой карточки */
+.timeline-card {
+    padding: 8px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important; /* Текст и фото встают друг под другом */
+}
+
+.timeline-main-content {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+}
+
+/* Уменьшение текстового блока */
+.timeline-text-side {
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+.timeline-text-side h3 {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px !important;
+    word-wrap: break-word !important;
+    line-height: 1.1 !important;
+}
+
+.timeline-text-side p {
+    font-size: 0.75rem !important;
+    line-height: 1.2 !important;
+}
+
+/* Уменьшение фотографий */
+.timeline-img-horizontal,
+.timeline-img-vertical {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 90px !important; /* Жесткое ограничение высоты фото */
+    object-fit: cover !important;
+    border-radius: 6px !important;
+    margin: 6px 0 !important;
+}
+
+/* Адаптация центральной даты */
+.timeline-date-badge {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    font-size: 0.65rem !important; /* Уменьшенный шрифт для экономии места */
+    padding: 4px !important;
+    text-align: center !important;
+    z-index: 5 !important;
+    white-space: nowrap !important; /* Запрет на перенос даты */
+}
+
+/* Белый фон и тени для карточек */
+.timeline-card {
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Центральная вертикальная линия */
+.timeline-wrapper {
+    position: relative !important;
+}
+
+.timeline-wrapper::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    width: 2px !important;
+    background-color: #c0c0c0 !important; /* Цвет основной линии */
+    transform: translateX(-50%) !important;
+    z-index: 1 !important;
+    display: block !important;
+}
+
+/* Настройка позиционирования для отрисовки веток */
+.timeline-event .left-side,
+.timeline-event .right-side {
+    position: relative !important;
+}
+
+/* Ветка для карточек слева (соединяет правый край карточки с центром) */
+.timeline-event .left-side::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: -13.6% !important; /* Математическое вычисление расстояния от 44% ширины до центра */
+    width: 13.6% !important;
+    height: 2px !important;
+    background-color: #c0c0c0 !important;
+    z-index: 1 !important;
+    display: block !important;
+}
+
+/* Ветка для карточек справа (соединяет левый край карточки с центром) */
+.timeline-event .right-side::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: -13.6% !important;
+    width: 13.6% !important;
+    height: 2px !important;
+    background-color: #c0c0c0 !important;
+    z-index: 1 !important;
+    display: block !important;
+}
+
+/* Перекрытие линии под плашкой с датой (чтобы ось не зачеркивала текст) */
+.timeline-date-badge {
+    background-color: #f0f0f0 !important; /* Подставь цвет фона твоего сайта, если он не серый */
+    border: 2px solid #c0c0c0 !important; /* Опциональная рамка в цвет оси */
+}
+
+.timeline-date-badge {
+    background-color: #000000 !important;
+    border: 1px solid #ffffff !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    z-index: 100 !important;
+}
+
+.timeline-text-side {
+    flex-shrink: 0 !important;
+    min-height: min-content !important; /* Запрет на сплющивание блока */
+    display: block !important;
+}
+
+.timeline-text-side h3,
+.timeline-text-side p {
+    color: #000000 !important; /* Принудительный черный цвет на случай сбоя наследования */
+    display: block !important;
+    flex-shrink: 0 !important; 
+    white-space: normal !important; /* Разрешение на перенос строк */
+}
+
+/* 4. Настройка фотографий (чтобы не выдавливали текст) */
+.timeline-img-horizontal,
+.timeline-img-vertical {
+    flex-shrink: 0 !important;
+    display: block !important;
+}
+
+.timeline-delete-btn {
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: transparent !important; /* Удаление заливки квадрата */
+    border: none !important; /* Удаление границ квадрата */
+    box-shadow: none !important; /* Удаление возможных теней */
+    color: #888888 !important; /* Серый цвет крестика */
+    font-size: 20px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.timeline-event .left-side::after,
+.timeline-event .right-side::after {
+    display: none !important;
+}
+
+.timeline-event .left-side .timeline-card::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: -13.6% !important; /* Расстояние от края карточки до центральной оси */
+    width: 13.6% !important;
+    height: 2px !important;
+    background-color: #c0c0c0 !important;
+    z-index: 1 !important;
+    display: block !important;
+}
+
+.timeline-event .right-side .timeline-card::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: -13.6% !important;
+    width: 13.6% !important;
+    height: 2px !important;
+    background-color: #c0c0c0 !important;
+    z-index: 1 !important;
+    display: block !important;
+}
+
+.timeline-wrapper {
+    padding-top: 100px !important; /* Увеличьте значение, если нужно опустить еще ниже */
+}
+
+/* Смещение начала центральной линии, чтобы она не торчала над первым событием */
+.timeline-wrapper::before {
+    top: 50px !important; /* Значение должно совпадать с padding-top у .timeline-wrapper */
 }
