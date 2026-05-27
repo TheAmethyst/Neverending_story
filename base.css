@@ -1,0 +1,15 @@
+:root {
+    --accent: #ff4b5c; /* Цвет сердечка/кнопок */
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+}
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: white;
+    background: #000;
+    overflow-y: auto; /* Скролл только здесь */
+    min-height: 100vh;
+}
+body::after {
+    display: none;
+}
