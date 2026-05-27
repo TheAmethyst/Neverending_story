@@ -1,25 +1,105 @@
+// Глобальные переменные для контроля пагинации галереи
+let galleryOffset = 0;
+const galleryLimit = 30; // Размер одной порции загрузки
+let isLoadingGallery = false;
+let hasMoreGallery = true;
+
 window.loadGallery = async function() {
     const content = document.getElementById("content");
     if (!content) return;
+    
+    // Сброс состояния при открытии экрана
+    galleryOffset = 0;
+    hasMoreGallery = true;
+    isLoadingGallery = false;
+    window.galleryData = []; // Хранилище загруженных данных
+    
     content.innerHTML = "<div class='loader'>Загрузка фото...</div>";
 
-    // 1. Указываем только нужные колонки (сужаем объем данных)
-    // 2. Исключаем записи, где нет ссылки на фото
-    // 3. Ставим лимит на первую выгрузку (например, 60 последних фото)
+    await fetchGalleryBatch(true);
+    
+    // Подключение слушателя прокрутки
+    window.removeEventListener('scroll', handleGalleryScroll);
+    window.addEventListener('scroll', handleGalleryScroll);
+};
+
+async function fetchGalleryBatch(isFirstLoad = false) {
+    if (isLoadingGallery || !hasMoreGallery) return;
+    isLoadingGallery = true;
+
     const { data, error } = await window.db
         .from("gallery")
-        .select("id, image") // Убедись, что колонка с ссылкой называется 'image'
-        .not("image", "is", null) 
+        .select("id, image")
+        .not("image", "is", null)
         .order('created_at', { ascending: false })
-        .limit(60); 
+        .range(galleryOffset, galleryOffset + galleryLimit - 1);
+
+    isLoadingGallery = false;
 
     if (error) {
-        console.error("Ошибка галереи:", error); 
-        content.innerHTML = "<p>Ошибка загрузки</p>";
+        console.error("Ошибка галереи:", error);
+        if (isFirstLoad) document.getElementById("content").innerHTML = "<p>Ошибка загрузки</p>";
         return;
     }
+
+    if (data.length < galleryLimit) {
+        hasMoreGallery = false; // Фотографии закончились
+    }
     
-    renderGallery(data);
+    galleryOffset += galleryLimit;
+
+    if (data.length > 0) {
+        window.galleryData.push(...data);
+        
+        if (isFirstLoad) {
+            renderGallery(data); // Первичная отрисовка
+        } else {
+            appendGalleryItems(data); // Добавление в существующую сетку
+        }
+    } else if (isFirstLoad) {
+        document.getElementById("content").innerHTML = "<p>Галерея пуста</p>";
+    }
+}
+
+// Обработчик события прокрутки
+window.handleGalleryScroll = function() {
+    // Проверяем, активна ли сейчас галерея (есть ли сетка на экране)
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return; 
+
+    const scrollY = window.scrollY || window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    
+    // Более надежное вычисление высоты документа для мобильных браузеров
+    const documentHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+    );
+
+    // Загружаем следующую партию, когда до конца страницы остается 400px
+    if (scrollY + windowHeight >= documentHeight - 400) {
+        fetchGalleryBatch();
+    }
+};
+
+window.appendGalleryItems = function(data) {
+    const grid = document.querySelector('.gallery-grid');
+    if (!grid) return;
+
+    data.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "gallery-item";
+        
+        // ВНИМАНИЕ: скопируй структуру кнопок и onclick из твоей функции renderGallery, 
+        // чтобы новые фото открывались и удалялись так же, как и первые 30.
+        div.innerHTML = `
+            <img src="${p.image}" loading="lazy">
+            <button class="gallery-delete-btn" onclick="deleteGalleryPhoto(${p.id}, '${p.image}')">&times;</button>
+        `;
+        
+        grid.appendChild(div);
+    });
 };
 
 window.addGalleryPhoto = async function() {
