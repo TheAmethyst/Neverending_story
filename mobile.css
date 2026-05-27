@@ -121,6 +121,31 @@ header nav {
     color: #ffffff; /* Цвет активного элемента */
 }
 
+/* Скрываем текстовые подписи в мобильной версии */
+.nav-btn .tab-label {
+    display: none !important;
+}
+
+/* Центрируем и увеличиваем иконки */
+.nav-btn .material-icons {
+    font-size: 34px !important; /* Увеличенный размер */
+    transition: all 0.3s ease;
+}
+
+/* Применение градиента к активной иконке */
+.nav-btn.active .material-icons {
+    background: linear-gradient(135deg, #a3bac7 0%, #819eac 50%, #667c8a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; /* Сброс сплошного цвета */
+    transform: scale(1.1); /* Легкое увеличение активной иконки для акцента */
+}
+
+
+
+
+
 /* ===== 2. КОНТЕНТНАЯ ОБЛАСТЬ ===== */
 body {
     padding-bottom: 80px; /* Отступ для Tab Bar */
