@@ -43,21 +43,73 @@ window.previewTimelineImg = (input) => {
 // 2. РАБОТА С ДАННЫМИ (ЗАГРУЗКА И ОТРИСОВКА)
 // ==========================================
 
+// Глобальные переменные для пагинации таймлайна
+let timelineOffset = 0;
+const timelineLimit = 15; // Количество событий за одну выгрузку
+let isLoadingTimeline = false;
+let hasMoreTimeline = true;
+
 window.loadTimeline = async function() {
-    updateDynamicHeader('timeline');
+    document.body.setAttribute('data-page', 'timeline');
+    const content = document.getElementById("content");
+    if (!content) return;
+    
+    // Подготовка контейнера и сброс переменных
+    content.innerHTML = '<div class="timeline-wrapper" id="timelineList"></div>';
+    timelineOffset = 0;
+    isLoadingTimeline = false;
+    hasMoreTimeline = true;
+
+    await fetchTimelineBatch(true);
+
+    // Подключение слушателя прокрутки
+    window.removeEventListener('scroll', handleTimelineScroll);
+    window.addEventListener('scroll', handleTimelineScroll);
+    
+    if (typeof window.updateBackground === 'function') {
+    window.updateBackground('timeline');
+    }
+};
+
+// Функция загрузки порции данных
+window.fetchTimelineBatch = async function(isFirstLoad = false) {
+    if (isLoadingTimeline || !hasMoreTimeline) return;
+    isLoadingTimeline = true;
+
+    // Сужение выборки (только нужные колонки) и ограничение диапазона
     const { data, error } = await window.db
         .from('timeline')
-        .select('*')
-        .order('event_date', { ascending: true });
+        .select('id, event_date, title, description, image_url')
+        .order('event_date', { ascending: true })
+        .range(timelineOffset, timelineOffset + timelineLimit - 1);
 
-    const content = document.getElementById("content");
-    // Очищаем контент и создаем обертку
-    content.innerHTML = '<div class="timeline-wrapper" id="timelineList"></div>';
+    isLoadingTimeline = false;
+
+    if (error) {
+        console.error("Ошибка таймлайна:", error);
+        return;
+    }
+
+    if (data.length < timelineLimit) {
+        hasMoreTimeline = false; // Достигнут конец базы
+    }
+
+    if (data.length > 0) {
+        await appendTimelineItems(data, timelineOffset);
+        timelineOffset += timelineLimit;
+    } else if (isFirstLoad) {
+        document.getElementById("timelineList").innerHTML = "<p style='text-align:center;'>Событий нет</p>";
+    }
+};
+
+// Функция отрисовки (добавления) карточек в список
+window.appendTimelineItems = async function(data, startIndex) {
     const list = document.getElementById("timelineList");
+    if (!list) return;
 
-    // Используем индекс (i), чтобы чередовать стороны
     for (let i = 0; i < data.length; i++) {
         const event = data[i];
+        const absoluteIndex = startIndex + i; // Сохраняем чередование left/right
         const div = document.createElement("div");
         div.className = "timeline-event";
 
@@ -68,19 +120,19 @@ window.loadTimeline = async function() {
         let imageHTML = '';
         let isVertical = false;
 
+        // Проверка ориентации (теперь обрабатывается быстро за счет малого лимита)
         if (event.image_url) {
             const checkImg = new Image();
             checkImg.src = event.image_url;
             try {
                 await checkImg.decode();
                 isVertical = checkImg.height > checkImg.width;
-                imageHTML = `<img src="${event.image_url}" class="${isVertical ? 'timeline-img-vertical' : 'timeline-img-horizontal'}">`;
+                imageHTML = `<img src="${event.image_url}" class="${isVertical ? 'timeline-img-vertical' : 'timeline-img-horizontal'}" loading="lazy">`;
             } catch (e) {
-                console.error("Ошибка загрузки фото", e);
+                console.error("Ошибка загрузки фото таймлайна", e);
             }
         }
 
-        // ПОДГОТОВКА HTML КАРТОЧКИ (вынесли в переменную для удобства)
         const cardHTML = `
             <div class="timeline-card">
                 <button class="timeline-delete-btn" onclick="window.deleteEvent(${event.id})">&times;</button>
@@ -95,20 +147,37 @@ window.loadTimeline = async function() {
             </div>
         `;
 
-        // ГЛАВНОЕ ИЗМЕНЕНИЕ: Распределяем карточку по колонкам
-        // Если i четное (0, 2, 4) — карточка в left-side
-        // Если i нечетное (1, 3, 5) — карточка в right-side
+        // Распределение по сторонам на основе абсолютного индекса
         div.innerHTML = `
             <div class="timeline-date-badge">${formattedDate}</div>
             <div class="left-side">
-                ${i % 2 === 0 ? cardHTML : ''}
+                ${absoluteIndex % 2 === 0 ? cardHTML : ''}
             </div>
             <div class="right-side">
-                ${i % 2 !== 0 ? cardHTML : ''}
+                ${absoluteIndex % 2 !== 0 ? cardHTML : ''}
             </div>
         `;
 
         list.appendChild(div);
+    }
+};
+
+// Обработчик события прокрутки страницы
+window.handleTimelineScroll = function() {
+    const list = document.getElementById("timelineList");
+    if (!list) return; // Если ушли со страницы таймлайна
+
+    const scrollY = window.scrollY || window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const documentHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+    );
+
+    // Подгрузка следующих событий за 400px до конца экрана
+    if (scrollY + windowHeight >= documentHeight - 400) {
+        fetchTimelineBatch();
     }
 };
 
