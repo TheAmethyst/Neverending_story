@@ -11,15 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. НАВИГАЦИЯ
 // Переключение страниц
 window.openPage = function(page) {
-    const navButtons = document.querySelectorAll('header nav .nav-btn');
-    navButtons.forEach(btn => {
-        // Проверяем, содержит ли атрибут onclick имя текущей страницы
-        if (btn.getAttribute('onclick').includes(`'${page}'`)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
     const content = document.getElementById("content");
     const panel = document.getElementById("yearsPanel");
     
@@ -102,22 +93,22 @@ window.updateBackground = function(year) {
     let primarySrc = `img/${year}.jpg`;
     const fallbackSrc = `img/main.jpg`;
 
-    // Если экран мобильный (до 768px) и открыта главная страница, подменяем файл
-    if (window.innerWidth <= 768 && year === 'main') {
-        primarySrc = 'img/main_mobile.jpg';
+    // Если экран мобильный, принудительно запрашиваем мобильную версию фона для любого года
+    if (window.innerWidth <= 768) {
+        primarySrc = `img/${year}_mobile.jpg`;
     }
 
-    // Начинаем затухание
     bgElement.style.opacity = "0.3"; 
     
     const img = new Image();
     img.onload = () => {
         setTimeout(() => {
             bgElement.src = primarySrc;
-            bgElement.style.opacity = "1"; // Возвращаем яркость
+            bgElement.style.opacity = "1";
         }, 300);
     };
     img.onerror = () => {
+        // Защита от ошибок: если нужного мобильного фона еще нет в папке, загрузится дефолтный
         setTimeout(() => {
             bgElement.src = fallbackSrc;
             bgElement.style.opacity = "1";

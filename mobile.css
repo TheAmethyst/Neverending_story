@@ -121,31 +121,6 @@ header nav {
     color: #ffffff; /* Цвет активного элемента */
 }
 
-/* Скрываем текстовые подписи в мобильной версии */
-.nav-btn .tab-label {
-    display: none !important;
-}
-
-/* Центрируем и увеличиваем иконки */
-.nav-btn .material-icons {
-    font-size: 34px !important; /* Увеличенный размер */
-    transition: all 0.3s ease;
-}
-
-/* Применение градиента к активной иконке */
-.nav-btn.active .material-icons {
-    background: linear-gradient(135deg, #a3bac7 0%, #819eac 50%, #667c8a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent; /* Сброс сплошного цвета */
-    transform: scale(1.1); /* Легкое увеличение активной иконки для акцента */
-}
-
-
-
-
-
 /* ===== 2. КОНТЕНТНАЯ ОБЛАСТЬ ===== */
 body {
     padding-bottom: 80px; /* Отступ для Tab Bar */
@@ -443,35 +418,59 @@ input[type="date"], input[type="text"], textarea {
     font-size: 15px;
 }
 
-/* ===== 6. ПАНЕЛЬ ГОДОВ ===== */
+
+
+
+
+/* Увеличенный отступ снизу для контента (чтобы посты не прятались за двумя панелями) */
+#content {
+    padding: 20px 15px 130px 15px !important;
+    gap: 20px;
+}
+
+/* ===== 6. ПАНЕЛЬ ГОДОВ (ВТОРОЙ ТАББАР) ===== */
 #yearsPanel {
-    position: relative;
-    top: 0;
+    position: fixed;
+    /* Размещаем ровно над основным тапбаром (высота 60px) */
+    bottom: calc(60px + env(safe-area-inset-bottom)); 
     left: 0;
     width: 100%;
+    background: #000000 !important;
     display: flex;
     flex-direction: row;
     overflow-x: auto;
     padding: 10px 15px;
     box-sizing: border-box;
     white-space: nowrap;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+    z-index: 9998;
+    -webkit-overflow-scrolling: touch;
 }
 
 #yearsPanel h3 {
-    display: none; /* Скрыто для экономии пространства */
+    display: none;
 }
 
+/* Стили годов (белые и жирные) */
 .year-link {
     display: inline-block;
     margin: 0 8px 0 0;
-    padding: 8px 16px;
-    font-size: 1.2rem;
-    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 16px;
+    font-size: 1.1rem;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    border-radius: 12px;
+    background: transparent;
+    transition: background 0.3s ease;
 }
+
+/* Выделение активного года заданным градиентом */
+.year-link.active {
+    background: linear-gradient(135deg, rgba(64, 224, 208, 0.6) 0%, #00ced1 100%) !important;
+}
+
+
+
+
 
 /* ===== 7. ГАЛЕРЕЯ ===== */
 .gallery-grid {
