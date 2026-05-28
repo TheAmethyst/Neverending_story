@@ -1,6 +1,6 @@
 {
-  "name": "Полное название сайта",
-  "short_name": "Короткое имя",
+  "name": "Neverending Story",
+  "short_name": "Neverending Story",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
